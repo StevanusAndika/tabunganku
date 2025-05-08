@@ -20,7 +20,7 @@ class KategoriController
 
         $model = new Kategori($conn);
         $data = [
-            'nama_kategori' => $_POST['nama'],
+            'nama_kategori' => $_POST['nama_kategori'],
             'deskripsi' => $_POST['deskripsi']
         ];
 

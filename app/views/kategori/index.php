@@ -440,11 +440,17 @@ $email = $user['email'];
 
 <script>
 $(document).ready(function () {
-    loadKategori();
+    // Ambil dan tampilkan semua kategori
+    function loadKategori() {
+        $.get('kategori', function (data) {
+            $('#kategoriBody').html($(data).find('#kategoriBody').html());
+        });
+    }
 
-    // Tambah Kategori dengan konfirmasi
+    // Tambah Kategori
     $('#formTambah').on('submit', function (e) {
         e.preventDefault();
+
         Swal.fire({
             title: 'Tambah Kategori?',
             text: 'Pastikan data sudah benar.',
@@ -454,178 +460,120 @@ $(document).ready(function () {
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                const nama = $('#namaKategori').val();
-                const deskripsi = $('#deskripsiKategori').val();
-
-                $.post('kategori-add', { nama, deskripsi }, function (result) {
-                    if (result.error) {
-                        Swal.fire('Error', result.error, 'error');
-                    } else {
-                        Swal.fire('Sukses', result.success, 'success');
-                        $('#formTambah')[0].reset();
-                        $('#modalTambah').modal('hide');
-                        loadKategori();
+                $.ajax({
+                    url: 'kategori-add',
+                    method: 'POST',
+                    data: {
+                        nama_kategori: $('#namaKategori').val(),
+                        deskripsi: $('#deskripsiKategori').val()
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.success) {
+                            $('#modalTambah').modal('hide');
+                            $('#formTambah')[0].reset();
+                            Swal.fire('Berhasil', res.success, 'success');
+                            loadKategori();
+                        } else {
+                            Swal.fire('Gagal', res.error, 'error');
+                        }
                     }
-                }).fail(function () {
-                    Swal.fire('Error', 'Terjadi kesalahan saat menambahkan kategori.', 'error');
                 });
             }
         });
     });
 
+    // Detail Kategori
+    $(document).on('click', '.btn-detail', function () {
+        const id = $(this).data('id');
+        $.get('kategori-detail?id=' + id, function (data) {
+            const kategori = JSON.parse(data);
+            $('#detailNama').text(kategori.nama_kategori);
+            $('#detailDeskripsi').text(kategori.deskripsi);
+            $('#detailCreatedAt').text(kategori.created_at);
+            $('#modalDetail').modal('show');
+        });
+    });
 
+    // Tampilkan modal edit dan isi data
+    $(document).on('click', '.btn-edit', function () {
+        const id = $(this).data('id');
+        $.get('kategori-detail?id=' + id, function (data) {
+            const kategori = JSON.parse(data);
+            $('#editId').val(kategori.id);
+            $('#editNama').val(kategori.nama_kategori);
+            $('#editDeskripsi').val(kategori.deskripsi);
+            $('#modalEdit').modal('show');
+        });
+    });
 
-    
-
-    // Edit Kategori dengan konfirmasi
+    // Edit Kategori
     $('#formEdit').on('submit', function (e) {
         e.preventDefault();
         Swal.fire({
             title: 'Perbarui Kategori?',
-            text: 'Perubahan akan disimpan.',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Perbarui',
+            confirmButtonText: 'Simpan',
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                const id = $('#editId').val();
-                const nama = $('#editNama').val();
-                const deskripsi = $('#editDeskripsi').val();
-
-                $.post('kategori-update', { id, nama, deskripsi }, function (result) {
-                    if (result.error) {
-                        Swal.fire('Error', result.error, 'error');
-                    } else {
-                        Swal.fire('Sukses', result.success, 'success');
-                        $('#modalEdit').modal('hide');
-                        loadKategori();
+                $.ajax({
+                    url: 'kategori-update',
+                    method: 'POST',
+                    data: {
+                        id: $('#editId').val(),
+                        nama: $('#editNama').val(),
+                        deskripsi: $('#editDeskripsi').val()
+                    },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.success) {
+                            $('#modalEdit').modal('hide');
+                            Swal.fire('Berhasil', res.success, 'success');
+                            loadKategori();
+                        } else {
+                            Swal.fire('Gagal', res.error, 'error');
+                        }
                     }
-                }).fail(function () {
-                    Swal.fire('Error', 'Terjadi kesalahan saat memperbarui kategori.', 'error');
                 });
             }
         });
     });
 
-    
-
-function loadKategori() {
-    $.get('kategori', function (html) {
-        const newTable = $('<div>').html(html).find('#kategoriBody').html();
-        $('#kategoriBody').html(newTable);
-        attachButtonEvents();
-    });
-}
-
-function attachButtonEvents() {
-    $('.btn-detail').off('click').on('click', function () {
+    // Hapus Kategori
+    $(document).on('click', '.btn-delete', function () {
         const id = $(this).data('id');
-        lihatDetail(id);
+        Swal.fire({
+            title: 'Hapus Kategori?',
+            text: 'Data yang dihapus tidak bisa dikembalikan!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Hapus',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: 'kategori-delete',
+                    method: 'POST',
+                    data: { id },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.success) {
+                            Swal.fire('Berhasil', res.success, 'success');
+                            loadKategori();
+                        } else {
+                            Swal.fire('Gagal', res.error, 'error');
+                        }
+                    }
+                });
+            }
+        });
     });
 
-    $('.btn-edit').off('click').on('click', function () {
-        const id = $(this).data('id');
-        editKategori(id);
-    });
-
-    $('.btn-delete').off('click').on('click', function () {
-        const id = $(this).data('id');
-        hapusKategori(id);
-    });
-}
-
-function lihatDetail(id) {
-    $.getJSON(`kategori-detail?id=${id}`, function (data) {
-        if (data.error) {
-            Swal.fire('Error', data.error, 'error');
-        } else {
-            $('#detailNama').text(data.nama_kategori);
-            $('#detailDeskripsi').text(data.deskripsi);
-            $('#detailCreatedAt').text(data.created_at);
-            $('#modalDetail').modal('show');
-        }
-    }).fail(function () {
-        Swal.fire('Error', 'Terjadi kesalahan saat memuat detail kategori.', 'error');
-    });
-}
-
-function editKategori(id) {
-    $.getJSON(`kategori-detail?id=${id}`, function (data) {
-        if (data.error) {
-            Swal.fire('Error', data.error, 'error');
-        } else {
-            $('#editId').val(data.id);
-            $('#editNama').val(data.nama_kategori);
-            $('#editDeskripsi').val(data.deskripsi);
-            $('#modalEdit').modal('show');
-        }
-    }).fail(function () {
-        Swal.fire('Error', 'Terjadi kesalahan saat memuat data kategori untuk diedit.', 'error');
-    });
-}
-
-function hapusKategori(id) {
-    Swal.fire({
-        title: 'Yakin hapus?',
-        text: "Data tidak bisa dikembalikan!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Ya, hapus!',
-        cancelButtonText: 'Batal'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.post('kategori-delete', { id }, function (result) {
-                if (result.error) {
-                    Swal.fire('Error', result.error, 'error');
-                } else {
-                    Swal.fire('Terhapus!', 'Kategori telah dihapus.', 'success');
-                    loadKategori();
-                }
-            }).fail(function () {
-                Swal.fire('Error', 'Terjadi kesalahan saat menghapus kategori.', 'error');
-            });
-        }
-    });
-}
-
-let sortDirection = [];
-
-function sortTable(columnIndex) {
-    const $table = $('#kategoriTable');
-    const rows = $table.find('tr').not(':first').get();
-
-    sortDirection[columnIndex] = !sortDirection[columnIndex];
-
-    rows.sort(function (a, b) {
-        let cellA = $(a).children('td').eq(columnIndex).text().trim();
-        let cellB = $(b).children('td').eq(columnIndex).text().trim();
-        let isNumeric = !isNaN(cellA) && !isNaN(cellB);
-
-        if (isNumeric) {
-            return sortDirection[columnIndex] ? cellA - cellB : cellB - cellA;
-        } else {
-            return sortDirection[columnIndex]
-                ? cellA.localeCompare(cellB)
-                : cellB.localeCompare(cellA);
-        }
-    });
-
-    $.each(rows, function (index, row) {
-        $table.append(row);
-    });
-
-    $table.find('th i').each(function (index) {
-        if (index === columnIndex) {
-            $(this).attr('class', sortDirection[columnIndex] ? 'mdi mdi-swap-vertical' : 'mdi mdi-arrow-down');
-        } else {
-            $(this).attr('class', 'mdi mdi-swap-vertical');
-        }
-    });
-}
-
-
-
+    // Panggil load awal
+    loadKategori();
+});
 </script>
 
 </body>
