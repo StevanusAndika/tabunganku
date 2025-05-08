@@ -57,3 +57,4 @@ if (array_key_exists($routeKey, $routes)) {
     // Jika route tidak ditemukan, arahkan ke login
     redirect('login');
 }
+phpinfo();
