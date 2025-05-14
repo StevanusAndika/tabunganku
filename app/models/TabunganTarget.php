@@ -27,12 +27,14 @@ class TabunganTarget
     {
         $stmt = $this->conn->prepare("
             INSERT INTO kalkulator_target 
-            (user_id, nama_target, nominal_target, tanggal_dimulai, tanggal_berakhir, metode_menabung, hasil_kalkulasi, target_tercapai, durasi, created_at) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+            (user_id, kategori_id, mata_uang_id, nama_target, nominal_target, tanggal_dimulai, tanggal_berakhir, metode_menabung, hasil_kalkulasi, target_tercapai, durasi, created_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
         ");
 
         return $stmt->execute([
             $data['user_id'],
+            $data['kategori_id'],
+            $data['mata_uang_id'],
             $data['nama_target'],
             $data['nominal_target'],
             $data['tanggal_dimulai'],
@@ -48,8 +50,18 @@ class TabunganTarget
     {
         $stmt = $this->conn->prepare("
             UPDATE kalkulator_target SET 
-            nama_target = ?, nominal_target = ?, tanggal_dimulai = ?, 
-            tanggal_berakhir = ?, metode_menabung = ?, hasil_kalkulasi = ?, target_tercapai = ?, durasi = ?
+                nama_target = ?, 
+                nominal_target = ?, 
+                tanggal_dimulai = ?, 
+                tanggal_berakhir = ?, 
+                metode_menabung = ?, 
+                hasil_kalkulasi = ?, 
+                target_tercapai = ?, 
+                durasi = ?, 
+                saldo_terkumpul = ?, 
+                kategori_id = ?, 
+                mata_uang_id = ?, 
+                updated_at = NOW()
             WHERE id = ?
         ");
 
@@ -62,6 +74,9 @@ class TabunganTarget
             $data['hasil_kalkulasi'],
             $data['target_tercapai'],
             $data['durasi'],
+            $data['saldo_terkumpul'],
+            $data['kategori_id'],
+            $data['mata_uang_id'],
             $id
         ]);
     }

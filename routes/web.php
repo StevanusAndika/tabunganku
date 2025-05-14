@@ -42,13 +42,5 @@ return [
     'tabungan-target-delete' => 'TabunganTargetController@delete',
     'tabungan-target-detail' => 'TabunganTargetController@detail',
 
-    // Tabungan Routes
-    'tabungan' => 'TabunganController@index',
-    'tabungan-tambah' => 'TabunganController@store',
-    'tabungan-update' => 'TabunganController@update',
-    'tabungan-delete' => 'TabunganController@delete',
-    'tabungan-detail' => 'TabunganController@detail',
-    'tabungan-foto-hapus' => 'TabunganController@hapusFoto',
-
-    'riwayat' => 'RiwayatSaldoController@index',
+    
 ];
