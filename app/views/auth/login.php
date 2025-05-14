@@ -62,15 +62,15 @@
       <!-- page-body-wrapper ends -->
     </div>
 
-    <!-- JS -->
-    <script src="<?= BASE_URL ?>/assets/vendors/js/vendor.bundle.base.js"></script>
-    <script src="<?= BASE_URL ?>/assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
-    <script src="<?= BASE_URL ?>/assets/js/off-canvas.js"></script>
-    <script src="<?= BASE_URL ?>/assets/js/template.js"></script>
-    <script src="<?= BASE_URL ?>/assets/js/settings.js"></script>
-    <script src="<?= BASE_URL ?>/assets/js/hoverable-collapse.js"></script>
-    <script src="<?= BASE_URL ?>/assets/js/todolist.js"></script>
-    
+  <!-- JS -->
+  <script src="<?php echo BASE_URL; ?>/assets/vendors/js/vendor.bundle.base.js"></script>
+  <script src="<?php echo BASE_URL; ?>/assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+  <script src="<?php echo BASE_URL; ?>/assets/js/off-canvas.js"></script>
+  <script src="<?php echo BASE_URL; ?>/assets/js/template.js"></script>
+  <script src="<?php echo BASE_URL; ?>/assets/js/settings.js"></script>
+  <script src="<?php echo BASE_URL; ?>/assets/js/hoverable-collapse.js"></script>
+  <script src="<?php echo BASE_URL; ?>/assets/js/todolist.js"></script>
+
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
     <script>

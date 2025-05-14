@@ -230,22 +230,11 @@ $email = $user['email'];
               </a>
               <div class="collapse" id="form-elements">
                 <ul class="nav flex-column sub-menu">
-                  <li class="nav-item"><a class="nav-link" href="<?= base_url('/tabungan') ?>">Buat Dan Kelola Data</a></li>
+                  <li class="nav-item"><a class="nav-link" href="<?= base_url('/tabungan-target') ?>">Buat Dan Kelola Data</a></li>
                 </ul>
               </div>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" data-bs-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
-                <i class="menu-icon mdi mdi-chart-line"></i>
-                <span class="menu-title">Kakulator Target</span>
-                <i class="menu-arrow"></i>
-              </a>
-              <div class="collapse" id="charts">
-                <ul class="nav flex-column sub-menu">
-                  <li class="nav-item"> <a class="nav-link"  href="<?= base_url('/tabungan-target')?>">Lihat perkiraan Target Uang</a></li>
-                </ul>
-              </div>
-            </li>
+            
            
             <li class="nav-item">
               <a class="nav-link" data-bs-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
@@ -305,11 +294,11 @@ $email = $user['email'];
 
             <!-- Kartu Riwayat Tabungan -->
             <div class="col-md-3">
-                <div class="card" onclick="window.location.href='<?= base_url('riwayat') ?>'">
+                <div class="card" onclick="window.location.href='<?= base_url('mata-uang') ?>'">
                     <div class="card-body text-center">
                         <i class="bi bi-clock-history" style="font-size: 2rem;"></i>
-                        <h5 class="card-title mt-3">Riwayat Tabungan</h5>
-                        <p class="card-text">Lihat riwayat tabungan Anda.</p>
+                        <h5 class="card-title mt-3">Mata Uang</h5>
+                        <p class="card-text">Mata Uang Yang Didukung.</p>
                     </div>
                 </div>
             </div>
@@ -319,8 +308,8 @@ $email = $user['email'];
                 <div class="card" onclick="window.location.href='<?= base_url('tabungan-target') ?>'">
                     <div class="card-body text-center">
                         <i class="bi bi-cash-coin" style="font-size: 2rem;"></i>
-                        <h5 class="card-title mt-3">Kalkulator</h5>
-                        <p class="card-text">Kalkulasi Target tabungan.</p>
+                        <h5 class="card-title mt-3">Tabungan</h5>
+                        <p class="card-text">Kelola Data Tabungan.</p>
                     </div>
                 </div>
             </div>

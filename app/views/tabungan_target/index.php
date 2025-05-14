@@ -428,8 +428,8 @@ $email = $user['email'];
                             <?php foreach ($mataUangList as $mataUang): ?>
                           <option value="<?= htmlspecialchars($mataUang['id']) ?>">
                               <?= htmlspecialchars($mataUang['nama_mata_uang']) ?>
-                          </option>
-                      <?php endforeach; ?>
+                              </option>
+                              <?php endforeach; ?>
                             <!-- Tambahkan opsi lain jika perlu -->
                         </select>
                     </div>
@@ -469,26 +469,13 @@ $email = $user['email'];
         <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <p><strong>Nama Tabungan:</strong> <span id="detailNama"></span></p>
-        <p><strong>Nominal Target:</strong> <span id="detailNominal"></span></p>
-        <p><strong>Metode Menabung:</strong> <span id="detailMetode"></span></p>
-        <p><strong>Saldo Per Hari/Minggu/Bulan:</strong> <span id="detailSaldo"></span></p>
-        <p><strong>Tanggal Dimulai:</strong> <span id="detailTanggalDimulai"></span></p>
-        <p><strong>Tanggal Berakhir:</strong> <span id="detailTanggalBerakhir"></span></p>
-        <p><strong>Durasi:</strong> <span id="detailDurasi"></span></p>
-        <p><strong>Mata Uang:</strong> <span id="detailMataUang"></span></p>
-        <p><strong>Kategori:</strong> <span id="detailKategori"></span></p>
-        <p><strong>Saldo Terkumpul:</strong> <span id="detailSaldoTerkumpul"></span></p>
-        <p><strong >Hasil Kalkulasi:</strong> <span id="detailHasilKalkulasi"></span></p>
-        <p><strong>Target Tercapai:</strong> <span id="detailTargetTercapai"></span></p>
-
-        <p><strong>Dibuat Pada:</strong> <span id="detailCreatedAt"></span></p> 
-       
+        <p><strong>Nama Kategori:</strong> <span id="detailNama"></span></p>
+        <p><strong>Deskripsi:</strong> <span id="detailDeskripsi"></span></p>
+        <p><strong>Dibuat Pada:</strong> <span id="detailCreatedAt"></span></p> <!-- Tambahkan ini -->
       </div>
     </div>
   </div>
 </div>
-
 
 
 </div>
@@ -641,41 +628,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-     // Detail Kategori
-     $(document).on('click', '.btn-detail', function () {
+      // Detail Kategori
+    $(document).on('click', '.btn-detail', function () {
         const id = $(this).data('id');
-        $.get('tabungan-target-detail?id=' + id, function (data) {
-    if (!data.data) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Gagal',
-            text: data.error || 'Data tidak ditemukan',
+        $.get('kategori-detail?id=' + id, function (data) {
+            const kategori = JSON.parse(data);
+            $('#detailNama').text(kategori.nama_kategori);
+            $('#detailDeskripsi').text(kategori.deskripsi);
+            $('#detailCreatedAt').text(kategori.created_at);
+            $('#modalDetail').modal('show');
         });
-        return;
-    }
-
-    const detail = data.data;
-
-    $('#detailNama').text(detail.nama_target);
-    $('#detailNominal').text('Rp ' + Number(detail.nominal_target).toLocaleString());
-    $('#detailMetode').text(detail.metode_menabung);
-    $('#detailSaldo').text('Rp ' + Number(detail.hasil_kalkulasi).toLocaleString());
-    $('#detailTanggalDimulai').text(detail.tanggal_dimulai);
-    $('#detailTanggalBerakhir').text(detail.tanggal_berakhir);
-    $('#detailDurasi').text(detail.durasi);
-    $('#detailMataUang').text(detail.nama_mata_uang ?? '-');
-    $('#detailKategori').text(detail.nama_kategori ?? '-');
-    $('#detailSaldoTerkumpul').text('Rp ' + Number(detail.saldo_terkumpul).toLocaleString());
-    $('#detailHasilKalkulasi').text('Rp ' + Number(detail.hasil_kalkulasi).toLocaleString());
-    $('#detailTargetTercapai').text(detail.target_tercapai ? '100%' : '0%');
-    $('#detailCreatedAt').text(detail.created_at);
-    $('#detailUpdatedAt').text(detail.updated_at ?? '-');
-
-    $('#modalDetail').modal('show');
-});
-
-
     });
+
 
 });
 </script>

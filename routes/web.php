@@ -35,12 +35,13 @@ return [
     // Mata Uang Routes
     'mata-uang' => 'MataUangController@index',
 
-    // Tabungan Target Routes
+    // Tabungan Routes Routes
     'tabungan-target' => 'TabunganTargetController@index',
     'tabungan-target-save' => 'TabunganTargetController@save',
     'tabungan-target-update' => 'TabunganTargetController@update',
     'tabungan-target-delete' => 'TabunganTargetController@delete',
     'tabungan-target-detail' => 'TabunganTargetController@detail',
+
 
     
 ];
