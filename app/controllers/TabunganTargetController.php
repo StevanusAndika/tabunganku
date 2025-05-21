@@ -12,10 +12,22 @@ class TabunganTargetController
 
         $user = $_SESSION['user'];
         $model = new TabunganTarget($conn);
-        $kategori = $model->allByUser($user['id']);
+        $tabungan = $model->allByUser($user['id']);
+
         $kategoriModel = new Kategori($conn);
-        $kategoriList = $kategoriModel->all();
         $mataUangModel = new MataUang($conn);
+
+        foreach ($tabungan as &$item) {
+            $item['kategori'] = $item['kategori_id']
+                ? ($kategoriModel->find($item['kategori_id'])['nama_kategori'] ?? '-')
+                : '-';
+
+            $item['mata_uang'] = $item['mata_uang_id']
+                ? ($mataUangModel->find($item['mata_uang_id'])['nama_mata_uang'] ?? '-')
+                : '-';
+        }
+
+        $kategoriList = $kategoriModel->all();
         $mataUangList = $mataUangModel->all();
 
         include __DIR__ . '/../views/tabungan_target/index.php';
@@ -36,12 +48,6 @@ class TabunganTargetController
             'mata_uang_id' => $_POST['mata_uang_id'] ?? null,
         ];
 
-        if (empty($data['nama_target']) || empty($data['nominal_target']) || empty($data['tanggal_dimulai']) || empty($data['tanggal_berakhir'])) {
-            echo json_encode(['error' => 'Semua field harus diisi']);
-            return;
-        }
-
-        // Validasi tanggal_dimulai tidak boleh lebih dari tanggal_berakhir
         $tanggalDimulai = new DateTime($data['tanggal_dimulai']);
         $tanggalBerakhir = new DateTime($data['tanggal_berakhir']);
         if ($tanggalDimulai > $tanggalBerakhir) {
@@ -51,8 +57,10 @@ class TabunganTargetController
 
         $hasil = $this->calculateTabungan($data['nominal_target'], $data['tanggal_dimulai'], $data['tanggal_berakhir'], $data['metode_menabung']);
         $data['hasil_kalkulasi'] = $hasil['per_hari'];
-        $data['target_tercapai'] = $hasil['persentase'] >= 100 ? 1 : 0;
+       
         $data['durasi'] = $hasil['durasi'];
+        $data['target_tercapai'] = 0;
+
 
         $model = new TabunganTarget($conn);
         $result = $model->create($data);
@@ -74,7 +82,6 @@ class TabunganTargetController
             'mata_uang_id' => $_POST['mata_uang_id'] ?? null,
         ];
 
-        // Validasi tanggal_dimulai tidak boleh lebih dari tanggal_berakhir
         $tanggalDimulai = new DateTime($data['tanggal_dimulai']);
         $tanggalBerakhir = new DateTime($data['tanggal_berakhir']);
         if ($tanggalDimulai > $tanggalBerakhir) {
@@ -90,7 +97,8 @@ class TabunganTargetController
         $data['saldo_terkumpul'] = $hari_berjalan * $hasil['per_hari'];
 
         $persentase = ($data['saldo_terkumpul'] / $data['nominal_target']) * 100;
-        $data['target_tercapai'] = $persentase >= 100 ? 1 : 0;
+        $data['target_tercapai'] = min(round($persentase, 2), 100); // dibulatkan dan dibatasi maksimal 100
+        
 
         $model = new TabunganTarget($conn);
         $result = $model->update($_POST['id'], $data);
@@ -127,6 +135,21 @@ class TabunganTargetController
         $model = new TabunganTarget($conn);
         $detail = $model->find($id);
 
+        if ($detail) {
+            $kategoriModel = new Kategori($conn);
+            $mataUangModel = new MataUang($conn);
+
+            if ($detail['kategori_id']) {
+                $kategori = $kategoriModel->find($detail['kategori_id']);
+                $detail['kategori'] = $kategori['nama_kategori'] ?? null;
+            }
+
+            if ($detail['mata_uang_id']) {
+                $mataUang = $mataUangModel->find($detail['mata_uang_id']);
+                $detail['mata_uang'] = $mataUang['nama_mata_uang'] ?? null;
+            }
+        }
+
         echo json_encode($detail ? ['data' => $detail] : ['error' => 'Data tidak ditemukan']);
     }
 
@@ -136,7 +159,9 @@ class TabunganTargetController
         $end = new DateTime($tanggal_akhir);
         $interval = $start->diff($end);
         $durasi = "{$interval->y} tahun, {$interval->m} bulan, {$interval->d} hari";
-
+        $sudah_ditabung = 0;
+        $persentase = 0; // karena saat create belum ada saldo
+        
         if ($metode === 'harian') {
             $total = $interval->days + 1;
         } elseif ($metode === 'mingguan') {
@@ -149,7 +174,7 @@ class TabunganTargetController
 
         $per_hari = $nominal_target / $total;
         $sudah_ditabung = 0;
-        $persentase = ($sudah_ditabung / $nominal_target) * 100;
+        $persentase = ($nominal_target - $sudah_ditabung) * 100;
 
         return [
             'per_hari' => round($per_hari, 2),

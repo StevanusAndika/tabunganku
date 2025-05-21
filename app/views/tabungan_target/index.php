@@ -25,7 +25,7 @@ $email = $user['email'];
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title><?= APP_NAME ?> | Kategori </title>
+    <title><?= APP_NAME ?> | Data Tabungan </title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="<?= asset('assets/vendors/feather/feather.css') ?>">
 <link rel="stylesheet" href="<?= asset('assets/vendors/mdi/css/materialdesignicons.min.css') ?>">
@@ -194,22 +194,11 @@ $email = $user['email'];
               </a>
               <div class="collapse" id="form-elements">
                 <ul class="nav flex-column sub-menu">
-                  <li class="nav-item"><a class="nav-link" href="<?= base_url('/tabungan') ?>">Buat Dan Kelola Data</a></li>
+                  <li class="nav-item"><a class="nav-link" href="<?= base_url('/tabungan-target') ?>">Buat Dan Kelola Data</a></li>
                 </ul>
               </div>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" data-bs-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
-                <i class="menu-icon mdi mdi-chart-line"></i>
-                <span class="menu-title">Kakulator Target</span>
-                <i class="menu-arrow"></i>
-              </a>
-              <div class="collapse" id="charts">
-                <ul class="nav flex-column sub-menu">
-                  <li class="nav-item"> <a class="nav-link"  href="<?= base_url('/tabungan-target')?>">Lihat perkiraan Target Uang</a></li>
-                </ul>
-              </div>
-            </li>
+           
            
             <li class="nav-item">
               <a class="nav-link" data-bs-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
@@ -285,20 +274,25 @@ $email = $user['email'];
             </tr>
         </thead>
         <tbody>
-            <?php if (empty($kategori)) : ?>
+            <?php if (empty($tabungan)) : ?>
                 <tr><td colspan="9" class="text-center">Data Tabungan Target belum tersedia.</td></tr>
             <?php else : ?>
-                <?php $no = 1; foreach ($kategori as $item) : ?>
+                <?php $no = 1; foreach ($tabungan as $item) : ?>
                     <tr>
                         <td><?= $no++ ?></td>
                         <td><?= htmlspecialchars($item['nama_target']) ?></td>
-                        <td>Rp <?= number_format($item['nominal_target'], 0, ',', '.') ?></td>
+                        <td> <?= number_format($item['nominal_target'], 0, ',', '.') ?></td>
                         <td><?= htmlspecialchars($item['metode_menabung']) ?></td>
-                        <td>Rp <?= number_format($item['hasil_kalkulasi'], 0, ',', '.') ?></td>
+                        <td> <?= number_format($item['hasil_kalkulasi'], 0, ',', '.') ?></td>
+
                         <td><?= htmlspecialchars($item['tanggal_dimulai']) ?></td>
                         <td><?= htmlspecialchars($item['tanggal_berakhir']) ?></td>
                         <td><?= htmlspecialchars($item['durasi']) ?></td>
-                        <td><?= htmlspecialchars($item['mata_uang']) ?></td> 
+                        
+                        <td><?= htmlspecialchars($item['mata_uang'] ?? '-') ?></td>
+                        
+
+
                         <td>
                             <button class="btn btn-info btn-sm btn-detail" data-id="<?= $item['id'] ?>">Detail</button>
                             <button class="btn btn-warning btn-sm btn-edit" data-id="<?= $item['id'] ?>">Edit</button>
@@ -348,7 +342,7 @@ $email = $user['email'];
                     </div>
                     <div class="col-md-6 mb-2">
                         <label>Mata Uang</label>
-                        <select name="mata_uang" class="form-control" required> 
+                        <select name="mata_uang_id" class="form-control" required> 
                             <option value="">-- Pilih  Mata Uang --</option>
                             <?php foreach ($mataUangList as $mataUang): ?>
                           <option value="<?= htmlspecialchars($mataUang['id']) ?>">
@@ -423,14 +417,11 @@ $email = $user['email'];
                     </div>
                     <div class="col-md-6 mb-2">
                         <label>Mata Uang</label>
-                        <select name="mata_uang" id="edit_mata_uang" class="form-control" required>
-                            <option value="">-- Pilih  Mata Uang --</option>
+                        <select name="mata_uang_id" id="edit_mata_uang" class="form-control" required>
+                            <option value="">-- Pilih Mata Uang --</option>
                             <?php foreach ($mataUangList as $mataUang): ?>
-                          <option value="<?= htmlspecialchars($mataUang['id']) ?>">
-                              <?= htmlspecialchars($mataUang['nama_mata_uang']) ?>
-                              </option>
-                              <?php endforeach; ?>
-                            <!-- Tambahkan opsi lain jika perlu -->
+                                <option value="<?= htmlspecialchars($mataUang['id']) ?>"><?= htmlspecialchars($mataUang['nama_mata_uang']) ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                 </div>
@@ -438,18 +429,19 @@ $email = $user['email'];
                 <div class="row">
                     <div class="col-md-6 mb-2">
                         <label>Kategori</label>
-                        <select name="kategori" id="edit_kategori" class="form-control" required>
+                        <select name="kategori_id" id="edit_kategori" class="form-control" required>
                             <option value="">-- Pilih Kategori --</option>
-                            <?php foreach ($kategoriList as $item) : ?>
-                                <option value="<?= htmlspecialchars($item['id']) ?>"><?= htmlspecialchars($item['nama_kategori']) ?>
-                              </option>
+                            <?php foreach ($kategoriList as $item): ?>
+                                <option value="<?= htmlspecialchars($item['id']) ?>"><?= htmlspecialchars($item['nama_kategori']) ?></option>
                             <?php endforeach; ?>
+                        </select>
                     </div>
                     <div class="col-md-6 mb-2">
-                        <label>Saldo Terkumpul</label>
-                        <input type="number" name="saldo_terkumpul" id="edit_saldo_terkumpul" class="form-control" required>
+                    <label>Saldo Terkumpul</label>
+                    <input type="number" name="saldo_terkumpul" id="edit_saldo_terkumpul" class="form-control" value="0" required>
                 </div>
 
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-success" type="submit">Update</button>
@@ -460,22 +452,33 @@ $email = $user['email'];
 </div>
 
 
-<!-- Modal Detail -->
 <div class="modal fade" id="modalDetail" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Detail Kategori</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title">Detail Target Tabungan</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <p><strong>Nama Kategori:</strong> <span id="detailNama"></span></p>
-        <p><strong>Deskripsi:</strong> <span id="detailDeskripsi"></span></p>
-        <p><strong>Dibuat Pada:</strong> <span id="detailCreatedAt"></span></p> <!-- Tambahkan ini -->
+        <p><strong>Nama Target:</strong> <span id="detail_nama_target"></span></p>
+        <p><strong>Nominal Target:</strong> <span id="detail_nominal_target"></span></p>
+        <p><strong>Metode Menabung:</strong> <span id="detail_metode_menabung"></span></p>
+        <p><strong>Tanggal Dimulai:</strong> <span id="detail_tanggal_dimulai"></span></p>
+        <p><strong>Tanggal Berakhir:</strong> <span id="detail_tanggal_berakhir"></span></p>
+        <p><strong>Mata Uang:</strong> <span id="detail_mata_uang"></span></p>
+        <p><strong>Kategori:</strong> <span id="detail_kategori"></span></p>
+        <p><strong>Saldo Terkumpul:</strong> <span id="detail_saldo_terkumpul"></span></p>
+        <p><strong>Saldo per Periode:</strong> <span id="detail_hasil_kalkulasi"></span></p>
+        <p><strong>Durasi:</strong> <span id="detail_durasi"></span></p>
+        <p><strong>Target Tercapai:</strong> <span id="detail_target_tercapai"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
       </div>
     </div>
   </div>
 </div>
+
 
 
 </div>
@@ -553,29 +556,43 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Edit Data
-    document.querySelectorAll('.btn-edit').forEach(btn => {
+     // Event tombol edit
+     document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', function () {
             const id = this.dataset.id;
             fetch(`tabungan-target-detail?id=${id}`)
                 .then(res => res.json())
-                .then(data => {
-                    if (data.error) {
-                        Swal.fire('Error', data.error, 'error');
-                    } else {
+                .then(response => {
+                    if (response.error) {
+                        Swal.fire('Error', response.error, 'error');
+                    } else if (response.data) {
+                        const data = response.data;
                         document.getElementById('edit_id').value = data.id;
                         document.getElementById('edit_nama_target').value = data.nama_target;
                         document.getElementById('edit_nominal_target').value = data.nominal_target;
                         document.getElementById('edit_tanggal_dimulai').value = data.tanggal_dimulai;
                         document.getElementById('edit_tanggal_berakhir').value = data.tanggal_berakhir;
                         document.getElementById('edit_metode_menabung').value = data.metode_menabung;
+
+                        // Set selected option mata uang
+                        document.getElementById('edit_mata_uang').value = data.mata_uang_id ?? '';
+
+                        // Set selected option kategori
+                        document.getElementById('edit_kategori').value = data.kategori_id ?? '';
+
+                        // Set saldo terkumpul (readonly)
+                        document.getElementById('edit_saldo_terkumpul').value = data.saldo_terkumpul ?? 0;
+
                         new bootstrap.Modal(document.getElementById('modalEdit')).show();
                     }
+                })
+                .catch(() => {
+                    Swal.fire('Error', 'Gagal mengambil data.', 'error');
                 });
         });
     });
 
-    // Submit Edit
+    // Submit form edit
     document.getElementById('formEdit').addEventListener('submit', function (e) {
         e.preventDefault();
         const form = new FormData(this);
@@ -585,13 +602,16 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(res => res.json())
         .then(res => {
-            Swal.fire({
-                icon: res.success ? 'success' : 'error',
-                title: res.success ? 'Berhasil!' : 'Gagal!',
-                text: res.success || res.error
-            }).then(() => {
-                if (res.success) location.reload();
-            });
+            if (res.success) {
+                Swal.fire('Sukses', res.success, 'success').then(() => {
+                    location.reload(); // reload halaman setelah update sukses
+                });
+            } else if (res.error) {
+                Swal.fire('Error', res.error, 'error');
+            }
+        })
+        .catch(() => {
+            Swal.fire('Error', 'Gagal memperbarui data.', 'error');
         });
     });
 
@@ -629,18 +649,38 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
       // Detail Kategori
-    $(document).on('click', '.btn-detail', function () {
-        const id = $(this).data('id');
-        $.get('kategori-detail?id=' + id, function (data) {
-            const kategori = JSON.parse(data);
-            $('#detailNama').text(kategori.nama_kategori);
-            $('#detailDeskripsi').text(kategori.deskripsi);
-            $('#detailCreatedAt').text(kategori.created_at);
+      $(document).on('click', '.btn-detail', function () {
+    const id = $(this).data('id');
+    $.get('tabungan-target-detail?id=' + id, function (response) {
+        const res = JSON.parse(response);
+        if (res.data) {
+            const data = res.data;
+            $('#detail_nama_target').text(data.nama_target);
+            $('#detail_nominal_target').text(formatRupiah(data.nominal_target));
+            $('#detail_metode_menabung').text(data.metode_menabung);
+            $('#detail_tanggal_dimulai').text(data.tanggal_dimulai);
+            $('#detail_tanggal_berakhir').text(data.tanggal_berakhir);
+            $('#detail_mata_uang').text(data.mata_uang || '-');
+            $('#detail_kategori').text(data.kategori || '-');
+            $('#detail_saldo_terkumpul').text(formatRupiah(data.saldo_terkumpul));
+            $('#detail_hasil_kalkulasi').text(formatRupiah(data.hasil_kalkulasi));
+            $('#detail_durasi').text(data.durasi || '-');
+            $('#detail_target_tercapai').text(data.target_tercapai + ' %');
+
             $('#modalDetail').modal('show');
-        });
+        } else {
+            alert(res.error || 'Data tidak ditemukan');
+        }
     });
-
-
+});
+// Fungsi bantu untuk format rupiah
+function formatRupiah(angka) {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+    }).format(angka);
+}
 });
 </script>
 

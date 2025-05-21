@@ -2,14 +2,17 @@
 
 return [
     // Authentication Routes
-    '' => 'AuthController@index',
-    'login' => 'AuthController@login',
-    'login-post' => 'AuthController@loginPost',
-    'register' => 'AuthController@register',
-    'register-post' => 'AuthController@registerPost',
-    'logout' => 'AuthController@logout',
-    'reset-password' => 'AuthController@resetPassword',
-    'reset-password-post' => 'AuthController@resetPasswordPost',
+      // Authentication Routes
+      '' => 'AuthController@index',
+      'login' => 'AuthController@login',
+      'login-post' => 'AuthController@loginPost',
+      'register' => 'AuthController@register',
+      'register-post' => 'AuthController@registerPost',
+      'logout' => 'AuthController@logout',
+      'reset-password' => 'AuthController@resetPassword',
+      'reset-password-post' => 'AuthController@resetPasswordPost',
+  
+  
 
     // Dashboard Routes
     'dashboard' => 'DashboardController@index',

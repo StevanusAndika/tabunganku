@@ -268,7 +268,7 @@ CREATE TABLE `tabungan` (
   `status_tabungan` enum('belum dimulai','berlangsung','berakhir') DEFAULT 'belum dimulai',
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
